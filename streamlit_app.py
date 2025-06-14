@@ -101,11 +101,10 @@ elif page == "Predictions":
     
     list_var = list(df.columns.drop(["student_id"]))
     features_selection = st.sidebar.multiselect("Select Features (X)",list_var,default=list_var)
-    target_selection  = st.sidebar.selectbox("Select target variable (Y))",list_var)
     selected_metrics = st.sidebar.multiselect("Metrics to display", ["Mean Squared Error (MSE)","Mean Absolute Error (MAE)","R² Score"],default=["Mean Absolute Error (MAE)"])
 
     X = df[features_selection]
-    y = df[target_selection]
+    y = df["exam_score"]
 
     st.dataframe(X.head())
     st.dataframe(y.head())

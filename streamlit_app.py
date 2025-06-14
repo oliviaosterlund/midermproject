@@ -127,7 +127,9 @@ elif page == "Predictions":
     if "R² Score" in selected_metrics:
         r2 = metrics.r2_score(y_test, predictions)
         st.write(f"- **R2** {r2:,.3f}")
-
+    
+    coeff_df = pd.DataFrame(lr.coef_, index = X_train.columns, columns=['Coefficient'])
+    st.dataframe(coeff_df)
 
     fig, ax = plt.subplots()
     ax.scatter(y_test,predictions,alpha=0.5)

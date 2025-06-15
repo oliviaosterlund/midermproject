@@ -76,7 +76,7 @@ elif page == "Data Visualization":
             order = ['Poor', 'Fair', 'Good']
         else:
             order = None
-        sns.boxplot(df=df_plot, x = x_col_2, y = "exam_score", order = order)
+        sns.boxplot(data=df_plot, x = x_col_2, y = "exam_score", order = order)
         st.pyplot(fig_bar)
     with tab3:
         st.subheader("Correlation Matrix")

@@ -93,16 +93,12 @@ elif page == "Automated Report":
 elif page == "Predictions":
     st.subheader("Predictions")
 
-    df2 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality"], axis = 1)
+    df2 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality", "diet_quality"], axis = 1)
     from sklearn.preprocessing import LabelEncoder
     le = LabelEncoder()
     list_non_num =["part_time_job","extracurricular_participation"]
     for element in list_non_num:
         df2[element]= le.fit_transform(df2[element])
-    from sklearn.preprocessing import OrdinalEncoder
-    categories = [['Poor', 'Fair', 'Good']]
-    oe = OrdinalEncoder(categories=categories)
-    df2[["diet_quality"]] = oe.fit_transform(df2[["diet_quality"]])
     
     
     list_var = list(df2.columns)

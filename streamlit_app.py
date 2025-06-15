@@ -70,7 +70,13 @@ elif page == "Data Visualization":
         st.subheader("Box Plot")
         fig_bar, ax_bar = plt.subplots(figsize=(12,6))
         x_col_2 = st.selectbox("Select x-axis variable", options=["exercise_frequency", "diet_quality", "mental_health_rating"])
-        sns.boxplot(df, x = x_col_2, y = "exam_score")
+        df_plot = df.copy()
+        if x_col_2 == "diet_quality":
+            df_plot['diet_quality'] = pd.Categorical(df_plot['diet_quality'], categories=['Poor', 'Fair', 'Good'], ordered=True)
+            order = ['Poor', 'Fair', 'Good']
+        else:
+            order = None
+        sns.boxplot(df=df_plot, x = x_col_2, y = "exam_score", order = order)
         st.pyplot(fig_bar)
     with tab3:
         st.subheader("Correlation Matrix")

@@ -93,13 +93,19 @@ elif page == "Automated Report":
 elif page == "Predictions":
     st.subheader("Predictions")
 
+    df2 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality"], axis = 1)
     from sklearn.preprocessing import LabelEncoder
     le = LabelEncoder()
-    list_non_num =["student_id","gender","part_time_job","diet_quality","parental_education_level","internet_quality","extracurricular_participation"]
+    list_non_num =["part_time_job","extracurricular_participation"]
     for element in list_non_num:
-        df[element]= le.fit_transform(df[element])
+        df2[element]= le.fit_transform(df2[element])
+    from sklearn.preprocessing import OrdinalEncoder
+    categories = [['poor', 'fair', 'good']]
+    oe = OrdinalEncoder(categories=categories)
+    df2[["diet_quality"]] = oe.fit_transform(df2[["diet_quality"]])
     
-    list_var = list(df.columns.drop(["student_id", "exam_score", "gender", "age", "parental_education_level", "internet_quality"]))
+    
+    list_var = list(df2.columns)
     features_selection = st.sidebar.multiselect("Select Features (X)",list_var,default=list_var)
     selected_metrics = st.sidebar.multiselect("Metrics to display", ["Mean Squared Error (MSE)","Mean Absolute Error (MAE)","R² Score"],default=["Mean Absolute Error (MAE)"])
 

@@ -100,7 +100,7 @@ elif page == "Predictions":
     st.subheader("Predictions")
 
     df2 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality"], axis = 1)
-    df2['diet_quality'] = df2['diet_quality'].map({'Poor': 0, 'Fair': 1, 'Good': 1})
+    df2['diet_quality'] = df2['diet_quality'].map({'Poor': 0, 'Fair': 1, 'Good': 2})
     from sklearn.preprocessing import LabelEncoder
     le = LabelEncoder()
     list_non_num =["part_time_job","extracurricular_participation"]

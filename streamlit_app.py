@@ -101,7 +101,7 @@ elif page == "Predictions":
         df2[element]= le.fit_transform(df2[element])
     
     
-    list_var = list(df2.columns)
+    list_var = list(df2.columns.drop("exam_score"))
     features_selection = st.sidebar.multiselect("Select Features (X)",list_var,default=list_var)
     selected_metrics = st.sidebar.multiselect("Metrics to display", ["Mean Squared Error (MSE)","Mean Absolute Error (MAE)","R² Score"],default=["Mean Absolute Error (MAE)"])
 

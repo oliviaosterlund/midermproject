@@ -109,8 +109,8 @@ elif page == "Predictions":
     features_selection = st.sidebar.multiselect("Select Features (X)",list_var,default=list_var)
     selected_metrics = st.sidebar.multiselect("Metrics to display", ["Mean Squared Error (MSE)","Mean Absolute Error (MAE)","R² Score"],default=["Mean Absolute Error (MAE)"])
 
-    X = df[features_selection]
-    y = df["exam_score"]
+    X = df2[features_selection]
+    y = df2["exam_score"]
 
     from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2)

@@ -70,7 +70,6 @@ elif page == "Data Visualization":
         st.subheader("Box Plot")
         fig_bar, ax_bar = plt.subplots(figsize=(12,6))
         x_col_2 = st.selectbox("Select x-axis variable", options=["exercise_frequency", "diet_quality", "mental_health_rating"])
-        if x_col_2 == "diet_quality":
         sns.boxplot(df, x = x_col_2, y = "exam_score")
         st.pyplot(fig_bar)
     with tab3:

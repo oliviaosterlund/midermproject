@@ -41,10 +41,6 @@ if page == "Introduction":
     The goal is to leverage these factors to *predict the academic success* in students and better understand
     which variables are most impactful.
     """)
-
-    missing = df.isnull().sum()
-    if missing.sum() != 0:
-        df = df.dropna()
     
     st.markdown("##### Data Preview")
     rows = st.slider("Select a number of rows to display",5,20,5)

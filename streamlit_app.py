@@ -100,7 +100,7 @@ elif page == "Predictions":
     for element in list_non_num:
         df2[element]= le.fit_transform(df2[element])
     from sklearn.preprocessing import OrdinalEncoder
-    categories = [['poor', 'fair', 'good']]
+    categories = [['Poor', 'Fair', 'Good']]
     oe = OrdinalEncoder(categories=categories)
     df2[["diet_quality"]] = oe.fit_transform(df2[["diet_quality"]])
     

@@ -195,7 +195,7 @@ elif page == "Predictions":
 
 elif page == "Explainability":
     st.subheader("Explainability")
-    df3 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality", study_hours_per_day], axis = 1)
+    df3 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality", "study_hours_per_day"], axis = 1)
     df3['diet_quality'] = df3['diet_quality'].map({'Poor': 0, 'Fair': 1, 'Good': 2})
     le3 = LabelEncoder()
     list_non_numeric =["part_time_job","extracurricular_participation"]

@@ -217,9 +217,9 @@ elif page == "Explainability":
     st.pyplot(plt.gcf())
 
 
-    # SHAP Scatter Plot for 'study_hours_per_day'
-    st.markdown("### SHAP Scatter Plot for 'study_hours_per_day'")
-    shap.plots.scatter(shap_values[:, "study_hours_per_day"], color=shap_values, show=False)
+    # SHAP Scatter Plot for 'mental_health_rating'
+    st.markdown("### SHAP Scatter Plot for 'mental_health_rating'")
+    shap.plots.scatter(shap_values[:, "mental_health_rating"], color=shap_values, show=False)
     st.pyplot(plt.gcf())
 
 elif page == "MLflow Runs":

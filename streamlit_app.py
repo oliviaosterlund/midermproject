@@ -42,7 +42,7 @@ if page == "Introduction":
     #### What this app does:
     - *Analyzes* key lifestyle, academic, and personal factors
     - *Visualizes* trends and provides actionable insights
-    - *Predicts* student academic performance (exam sores) using a linear regression model
+    - *Predicts* student academic performance (exam sores) using a regression model
     """)
     st.image("dataset-card.png", width=500)
 

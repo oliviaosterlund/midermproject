@@ -10,7 +10,7 @@ import dagshub
 import shap
 import pycaret
 
-token = os.getenv("DAGSHUB_TOKEN") or st.secrets["DAGSHUB_TOKEN"]
+token = st.secrets["DAGSHUB_TOKEN"]
 os.environ["DAGSHUB_TOKEN"] = token
 
 dagshub.init(repo_owner='oliviaosterlund', repo_name='finalprojectapp', mlflow=True)

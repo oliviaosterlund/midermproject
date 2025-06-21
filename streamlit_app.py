@@ -4,8 +4,23 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
+import mlflow
+import mlflow.sklearn
+import dagshub
+import shap
+
+dagshub.init(repo_owner='oliviaosterlund', repo_name='finalprojectapp', mlflow=True)
+
 from ydata_profiling import ProfileReport
 from streamlit_pandas_profiling import st_profile_report
+
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from xgboost import XGBRegressor
+from sklearn import metrics
 
 st.set_page_config(
     page_title="Student Habits vs Performance",
@@ -15,7 +30,7 @@ st.set_page_config(
 
 df = pd.read_csv("student_habits_performance.csv")
 st.sidebar.title("Student Habits vs Student Performance")
-page = st.sidebar.selectbox("Select Page",["Introduction","Data Visualization", "Automated Report","Predictions"])
+page = st.sidebar.selectbox("Select Page",["Introduction","Data Visualization", "Automated Report","Predictions", "Explainability", "MLFlow Runs"])
 
 if page == "Introduction":
     st.title("Student Performance Predictor")
@@ -97,29 +112,64 @@ elif page == "Predictions":
 
     df2 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality"], axis = 1)
     df2['diet_quality'] = df2['diet_quality'].map({'Poor': 0, 'Fair': 1, 'Good': 2})
-    from sklearn.preprocessing import LabelEncoder
     le = LabelEncoder()
     list_non_num =["part_time_job","extracurricular_participation"]
     for element in list_non_num:
         df2[element]= le.fit_transform(df2[element])
     
-    
     list_var = list(df2.columns.drop("exam_score"))
+    
     features_selection = st.sidebar.multiselect("Select Features (X)",list_var,default=list_var)
+    
+    model_name = st.sidebar.selectbox(
+        "Choose Model",
+        ["Linear Regression", "Decision Tree", "Random Forest", "XGBoost"],
+    )
+
+    params = {}
+    if model_name == "Decision Tree":
+        params['max_depth'] = st.sidebar.slider("Max Depth", 1, 20, 5)
+    elif model_name == "Random Forest":
+        params['n_estimators'] = st.sidebar.slider("Number of Estimators", 10, 500, 100)
+        params['max_depth'] = st.sidebar.slider("Max Depth", 1, 20, 5)
+    elif model_name == "XGBoost":
+        params['n_estimators'] = st.sidebar.slider("Number of Estimators", 10, 500, 100)
+        params['learning_rate'] = st.sidebar.slider("Learning Rate", 0.01, 0.5, 0.1, step=0.01)
+
     selected_metrics = st.sidebar.multiselect("Metrics to display", ["Mean Squared Error (MSE)","Mean Absolute Error (MAE)","R² Score"],default=["Mean Absolute Error (MAE)"])
 
+    
     X = df2[features_selection]
     y = df2["exam_score"]
 
-    from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2, random_state = 42)
 
-    from sklearn.linear_model import LinearRegression
-    model = LinearRegression()
-    model.fit(X_train,y_train)
-    predictions = model.predict(X_test)
+    
+    if model_name == "Linear Regression":
+        model = LinearRegression()
+    elif model_name == "Decision Tree":
+        model = DecisionTreeRegressor(**params, random_state=42)
+    elif model_name == "Random Forest":
+        model = RandomForestRegressor(**params, random_state=42)
+    elif model_name == "XGBoost":
+        model = XGBRegressor(objective='reg:squarederror', **params, random_state=42)
 
-    from sklearn import metrics 
+
+   with mlflow.start_run(run_name=model_name):
+        mlflow.log_param("model", model_name)
+        for k, v in params.items():
+            mlflow.log_param(k, v)
+
+        model.fit(X_train, y_train)
+        predictions = model.predict(X_test)
+
+        mse = metrics.mean_squared_error(y_test, predictions)
+        mae = metrics.mean_absolute_error(y_test, predictions)
+        r2 = metrics.r2_score(y_test, predictions)
+        mlflow.log_metric("mse", mse)
+        mlflow.log_metric("mae", mae)
+        mlflow.log_metric("r2", r2)
+
     if "Mean Squared Error (MSE)" in selected_metrics:
         mse = metrics.mean_squared_error(y_test, predictions)
         st.write(f"- **MSE** {mse:,.2f}")
@@ -130,9 +180,6 @@ elif page == "Predictions":
         r2 = metrics.r2_score(y_test, predictions)
         st.write(f"- **R2** {r2:,.3f}")
     
-    coeff_df = pd.DataFrame(model.coef_, index = X_train.columns, columns=['Coefficient'])
-    st.dataframe(coeff_df)
-
     fig, ax = plt.subplots()
     ax.scatter(y_test,predictions,alpha=0.5)
     ax.plot([y_test.min(),y_test.max()],
@@ -142,8 +189,42 @@ elif page == "Predictions":
     ax.set_title("Actual vs Predicted Exam Scores")
     st.pyplot(fig)
 
+elif page == "Explainability":
+    st.subheader("Explainability")
+    df3 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality"], axis = 1)
+    df3['diet_quality'] = df3['diet_quality'].map({'Poor': 0, 'Fair': 1, 'Good': 2})
+    le = LabelEncoder()
+    list_non_num =["part_time_job","extracurricular_participation"]
+    for element in list_non_num:
+        df3[element]= le.fit_transform(df3[element])
+    
+    X_shap, y_shap = df3.iloc[:, :-1], df.iloc[:, -1]
+    # Train default XGBoost model for explainability
+    model_exp = XGBRegressor(objective='reg:squarederror', n_estimators=100, random_state=42)
+    model_exp.fit(X_shap, y_shap)
+
+    # Create SHAP explainer and values
+    explainer = shap.Explainer(model_exp)
+    shap_values = explainer(X_shap)
+
+    # SHAP Waterfall Plot for first prediction
+    st.markdown("### SHAP Waterfall Plot for First Prediction")
+    shap.plots.waterfall(shap_values[0], show=False)
+    st.pyplot(plt.gcf())
 
 
+    # SHAP Scatter Plot for 'Latitude'
+    st.markdown("### SHAP Scatter Plot for 'study_hours_per_day'")
+    shap.plots.scatter(shap_values[:, "study_hours_per_day"], color=shap_values, show=False)
+    st.pyplot(plt.gcf())
 
+elif page == "MLflow Runs":
+    st.subheader("MLflow Runs")
+    # Fetch runs
+    runs = mlflow.search_runs(order_by=["start_time desc"])
+    st.dataframe(runs)
+    st.markdown(
+        "View detailed runs on DagsHub: [oliviaosterlund/finalprojectapp MLflow](https://dagshub.com/oliviaosterlund/finalprojectapp.mlflow)"
+    )
 
 

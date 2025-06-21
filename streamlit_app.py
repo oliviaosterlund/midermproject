@@ -242,7 +242,7 @@ elif page == "Pycaret":
         df4[element]= le3.fit_transform(df4[element])
     
     target = df4["exam_scores"]
-    features = st.multiselect("Select features",[c fr c in df4.columns if c != target],default=[c for c in df4.columns if c != target] )
+    features = st.multiselect("Select features",[c for c in df4.columns if c != target],default=[c for c in df4.columns if c != target] )
 
     if not features:
         st.warning("Please select at least one feature")

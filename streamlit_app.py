@@ -9,6 +9,9 @@ import mlflow.sklearn
 import dagshub
 import shap
 
+import os
+os.environ["RICH_DISABLE"] = "true"
+
 dagshub.init(repo_owner='oliviaosterlund', repo_name='finalprojectapp', mlflow=True)
 
 from ydata_profiling import ProfileReport

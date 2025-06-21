@@ -121,6 +121,10 @@ elif page == "Predictions":
     
     features_selection = st.sidebar.multiselect("Select Features (X)",list_var,default=list_var)
     
+    if not features:
+        st.warning("Please select at least one feature")
+        st.stop()
+    
     model_name = st.sidebar.selectbox(
         "Choose Model",
         ["Linear Regression", "Decision Tree", "Random Forest", "XGBoost"],

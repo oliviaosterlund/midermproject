@@ -118,9 +118,7 @@ elif page == "Predictions":
         df2[element]= le.fit_transform(df2[element])
     
     list_var = list(df2.columns.drop("exam_score"))
-    
     features_selection = st.sidebar.multiselect("Select Features (X)",list_var,default=list_var)
-    
     if not features_selection:
         st.warning("Please select at least one feature")
         st.stop()
@@ -196,12 +194,12 @@ elif page == "Explainability":
     st.subheader("Explainability")
     df3 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality"], axis = 1)
     df3['diet_quality'] = df3['diet_quality'].map({'Poor': 0, 'Fair': 1, 'Good': 2})
-    le = LabelEncoder()
+    le2 = LabelEncoder()
     list_non_num =["part_time_job","extracurricular_participation"]
     for element in list_non_num:
-        df3[element]= le.fit_transform(df3[element])
+        df3[element]= le2.fit_transform(df3[element])
     
-    X_shap, y_shap = df3.iloc[:, :-1], df.iloc[:, -1]
+    X_shap, y_shap = df3.iloc[:, :-1], df3["exam_score"]
     # Train default XGBoost model for explainability
     model_exp = XGBRegressor(objective='reg:squarederror', n_estimators=100, random_state=42)
     model_exp.fit(X_shap, y_shap)

@@ -1,4 +1,7 @@
 import streamlit as st
+import os
+os.environ["DAGSHUB_USER_TOKEN"] = "your_app_token_here"
+os.environ["RICH_DISABLE"] = "true"  # just in case
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -6,8 +9,6 @@ import numpy as np
 
 import mlflow
 import mlflow.sklearn
-import os
-os.environ["RICH_DISABLE"] = "true"
 import dagshub
 import shap
 

@@ -9,7 +9,7 @@ import mlflow.sklearn
 import dagshub
 import shap
 
-dagshub.init(repo_owner='oliviaosterlund', repo_name='finalprojectapp', mlflow=True, token="your_token_here")
+dagshub.init(repo_owner='oliviaosterlund', repo_name='finalprojectapp', mlflow=True)
 
 from ydata_profiling import ProfileReport
 from streamlit_pandas_profiling import st_profile_report

@@ -154,8 +154,7 @@ elif page == "Predictions":
     elif model_name == "XGBoost":
         model = XGBRegressor(objective='reg:squarederror', **params, random_state=42)
 
-
-   with mlflow.start_run(run_name=model_name):
+    with mlflow.start_run(run_name=model_name):
         mlflow.log_param("model", model_name)
         for k, v in params.items():
             mlflow.log_param(k, v)

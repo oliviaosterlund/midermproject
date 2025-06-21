@@ -121,7 +121,7 @@ elif page == "Predictions":
     
     features_selection = st.sidebar.multiselect("Select Features (X)",list_var,default=list_var)
     
-    if not features:
+    if not features_selection:
         st.warning("Please select at least one feature")
         st.stop()
     

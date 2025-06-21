@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -11,7 +10,7 @@ import shap
 import pycaret
 
 token = st.secrets["DAGSHUB_TOKEN"]
-os.environ["DAGSHUB_TOKEN"] = token
+dagshub.auth.add_app_token(token=token)
 
 dagshub.init(repo_owner='oliviaosterlund', repo_name='finalprojectapp', mlflow=True)
 

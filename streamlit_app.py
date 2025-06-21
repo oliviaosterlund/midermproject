@@ -227,7 +227,7 @@ elif page == "MLflow Runs":
     st.markdown(
         "View detailed runs on DagsHub: [oliviaosterlund/finalprojectapp MLflow](https://dagshub.com/oliviaosterlund/finalprojectapp.mlflow)"
     )
-elif page == "Pycaret"
+elif page == "Pycaret":
     from pycaret.classification import setup as cls_setup, compare_models as cls_compare, finalize_model as cls_finalize, predict_model as cls_predict, pull as cls_pull
     from pycaret.regression import setup as reg_setup, compare_models as reg_compare, finalize_model as reg_finalize, predict_model as reg_predict, pull as reg_pull
 

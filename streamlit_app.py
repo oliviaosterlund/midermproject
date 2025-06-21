@@ -195,13 +195,9 @@ elif page == "Predictions":
 
 elif page == "Explainability":
     st.subheader("Explainability")
-    df3 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality"], axis = 1)
+    df3 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality", "part_time_job","extracurricular_participation"], axis = 1)
     df3['diet_quality'] = df3['diet_quality'].map({'Poor': 0, 'Fair': 1, 'Good': 2})
-    le2 = LabelEncoder()
-    list_non_num =["part_time_job","extracurricular_participation"]
-    for element in list_non_num:
-        df3[element]= le2.fit_transform(df3[element])
-    
+
     X_shap, y_shap = df3.iloc[:, :-1], df3["exam_score"]
     # Train default XGBoost model for explainability
     model_exp = XGBRegressor(objective='reg:squarederror', n_estimators=100, random_state=42)
@@ -217,9 +213,9 @@ elif page == "Explainability":
     st.pyplot(plt.gcf())
 
 
-    # SHAP Scatter Plot for 'mental_health_rating'
-    st.markdown("### SHAP Scatter Plot for 'mental_health_rating'")
-    shap.plots.scatter(shap_values[:, "mental_health_rating"], color=shap_values, show=False)
+    # SHAP Scatter Plot for 'social_media_hours'
+    st.markdown("### SHAP Scatter Plot for 'social_media_hours'")
+    shap.plots.scatter(shap_values[:, "social_media_hours"], color=shap_values, show=False)
     st.pyplot(plt.gcf())
 
 elif page == "MLflow Runs":

@@ -6,11 +6,10 @@ import numpy as np
 
 import mlflow
 import mlflow.sklearn
-import dagshub
-import shap
-
 import os
 os.environ["RICH_DISABLE"] = "true"
+import dagshub
+import shap
 
 dagshub.init(repo_owner='oliviaosterlund', repo_name='finalprojectapp', mlflow=True)
 

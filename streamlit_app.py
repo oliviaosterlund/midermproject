@@ -33,7 +33,7 @@ st.set_page_config(
 
 df = pd.read_csv("student_habits_performance.csv")
 st.sidebar.title("Student Habits vs Student Performance")
-page = st.sidebar.selectbox("Select Page",["Introduction","Data Visualization", "Automated Report","Predictions", "Explainability", "MLFlow Runs", "Pycaret"])
+page = st.sidebar.selectbox("Select Page",["Introduction","Data Visualization", "Automated Report","Predictions", "Explainability", "MLFlow Runs"])
 
 if page == "Introduction":
     st.title("Student Performance Predictor")
@@ -230,59 +230,4 @@ elif page == "MLflow Runs":
     st.markdown(
         "View detailed runs on DagsHub: [oliviaosterlund/finalprojectapp MLflow](https://dagshub.com/oliviaosterlund/finalprojectapp.mlflow)"
     )
-elif page == "Pycaret":
-    from pycaret.classification import setup as cls_setup, compare_models as cls_compare, finalize_model as cls_finalize, predict_model as cls_predict, pull as cls_pull
-    from pycaret.regression import setup as reg_setup, compare_models as reg_compare, finalize_model as reg_finalize, predict_model as reg_predict, pull as reg_pull
-
-    from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, r2_score, mean_absolute_error
-    st.title("Pycaret")
-
-    df4 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality"], axis = 1)
-    df4['diet_quality'] = df4['diet_quality'].map({'Poor': 0, 'Fair': 1, 'Good': 2})
-    le3 = LabelEncoder()
-    list_non_num =["part_time_job","extracurricular_participation"]
-    for element in list_non_num:
-        df4[element]= le3.fit_transform(df4[element])
-    
-    target = df4["exam_scores"]
-    features = st.multiselect("Select features",[c for c in df4.columns if c != target],default=[c for c in df4.columns if c != target] )
-
-    if not features:
-        st.warning("Please select at least one feature")
-        st.stop()
-
-    if st.button("Train & Evaluate"):
-        model_df = df4[features+[target]]
-        st.dataframe(model_df.head())
-
-    with st.spinner("Training ..."):
-        reg_setup(data=model_df,target=target,session_id=42,html=False)
-        best = reg_compare(sort="R2",n_select=1)
-        model = reg_finalize(best)
-        comparison_df =reg_pull()
-    st.success("Training Complete!")
-
-    st.subheader("Model Comparison")
-    st.dataframe(comparison_df)
-
-    with st.spinner("Evaluating ... "):
-        pred_df = reg_predict(model,model_df)
-        actual = pred_df[target]
-        predicted = pred_df["Label"] if "Label" in pred_df.columns else pred_df.iloc[:, -1]
-
-        metrics= {}
-
-        metrics["R2"] = r2_score(actual,predicted)
-        metrics["MAE"] = mean_absolute_error(actual,predicted) 
-
-    st.success("Evaluation Done!")
-
-    st.subheader("Metrics")
-
-    cols = st.columns(len(metrics))
-    for i, (name,val) in enumerate(metrics.items()):
-        cols[i].metric(name, f"{val:4f}")
-    
-    st.subheader("Predictions")
-    st.dataframe(pred_df.head(10))
 

@@ -33,7 +33,7 @@ st.set_page_config(
 
 df = pd.read_csv("student_habits_performance.csv")
 st.sidebar.title("Student Habits vs Student Performance")
-page = st.sidebar.selectbox("Select Page",["Introduction","Data Visualization", "Automated Report","Predictions", "Explainability", "MLFlow Runs"])
+page = st.sidebar.selectbox("Select Page",["Introduction","Data Visualization", "Automated Report","Predictions"])
 
 if page == "Introduction":
     st.title("Student Performance Predictor")
@@ -192,42 +192,3 @@ elif page == "Predictions":
     ax.set_ylabel("Predicted Exam Scores")
     ax.set_title("Actual vs Predicted Exam Scores")
     st.pyplot(fig)
-
-elif page == "Explainability":
-    st.subheader("Explainability")
-    df3 = df.drop(["student_id","gender", "age", "parental_education_level", "internet_quality"], axis = 1)
-    df3['diet_quality'] = df3['diet_quality'].map({'Poor': 0, 'Fair': 1, 'Good': 2})
-    le3 = LabelEncoder()
-    list_non_numeric =["part_time_job","extracurricular_participation"]
-    for element in list_non_numeric:
-        df3[element]= le3.fit_transform(df3[element])
-
-    X_shap, y_shap = df3.iloc[:, :-1], df3["exam_score"]
-    # Train default XGBoost model for explainability
-    model_exp = XGBRegressor(objective='reg:squarederror', n_estimators=100, random_state=42)
-    model_exp.fit(X_shap, y_shap)
-
-    # Create SHAP explainer and values
-    explainer = shap.Explainer(model_exp)
-    shap_values = explainer(X_shap)
-
-    # SHAP Waterfall Plot for first prediction
-    st.markdown("### SHAP Waterfall Plot for First Prediction")
-    shap.plots.waterfall(shap_values[0], show=False)
-    st.pyplot(plt.gcf())
-
-
-    # SHAP Scatter Plot for 'social_media_hours'
-    st.markdown("### SHAP Scatter Plot for 'social_media_hours'")
-    shap.plots.scatter(shap_values[:, "social_media_hours"], color=shap_values, show=False)
-    st.pyplot(plt.gcf())
-
-elif page == "MLflow Runs":
-    st.subheader("MLflow Runs")
-    # Fetch runs
-    runs = mlflow.search_runs(order_by=["start_time desc"])
-    st.dataframe(runs)
-    st.markdown(
-        "View detailed runs on DagsHub: [oliviaosterlund/finalprojectapp MLflow](https://dagshub.com/oliviaosterlund/finalprojectapp.mlflow)"
-    )
-
